@@ -332,6 +332,7 @@
   <div>
     <button *ngIf="!authenticated" (click)="login()">Login</button>
     <button *ngIf="authenticated" (click)="logout()">Logout</button>
+    <button (click)="send()">Send</button>
   </div>
 </div>
 

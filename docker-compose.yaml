@@ -23,7 +23,7 @@ services:
     image: quay.io/keycloak/keycloak:22.0.5 # 23.0.X and 24.0.X has problem with hibernate connection to database
     container_name: app-keycloak
     restart: always
-    command: "start-dev --db=postgres --db-url=jdbc:postgresql://postgresql_db:5432/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD}"
+    command: "start-dev --db=postgres --db-url=jdbc:postgresql://postgresql_db:5432/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD} --import-realm"
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
@@ -32,6 +32,8 @@ services:
     ports:        # For development purpose
       - "8443:8443"
       - "8080:8080"
+    volumes:
+      - ./AppComponents/Keycloak/ImageProcessor-realm.json:/opt/keycloak/data/import/realm.json
     depends_on:
       postgresql_db:
         condition: service_healthy
@@ -48,4 +50,4 @@ networks:
   common-network:
 
 # sudo DB_PASSWORD=test1234 DB_USER=user DB_NAME=imageprocessor KEYCLOAK_ADMIN=admin KEYCLOAK_ADMIN_PASSWORD=admin docker compose up
-
+# Keycloak ADMIN = admin:admin  USER = user:user
