@@ -23,7 +23,7 @@ services:
     image: quay.io/keycloak/keycloak:22.0.5 # 23.0.X and 24.0.X has problem with hibernate connection to database
     container_name: app-keycloak
     restart: always
-    command: "start-dev --db=postgres --db-url=jdbc:postgresql://postgresql_db:5432/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD} --import-realm"
+    command: "start-dev --db=postgres --db-url=jdbc:postgresql://postgresql_db:5432/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD} --import-realm --health-enabled=true"
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
@@ -38,10 +38,33 @@ services:
       postgresql_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8443" ]
+      test: [ "CMD-SHELL", 'exec 3<>/dev/tcp/localhost/8080; echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\n" >&3; timeout --preserve-status 1 cat <&3 | grep -m 1 status | grep -m 1 UP; ERROR=$?; exec 3<&-; exec 3>&-; exit $$ERROR' ]
       interval: 10s
       timeout: 5s
       retries: 5
+  rabbitmq:
+    image: rabbitmq:3.9.20-management
+    container_name: app-rabbitmq
+    restart: always
+    networks:
+      - common-network
+    ports: # For development purpose
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+    volumes:
+      - ./AppComponents/RabbitMQ/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ./AppComponents/RabbitMQ/definitions.json:/etc/rabbitmq/definitions.json
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    depends_on:
+      keycloak:
+        condition: service_healthy
 
 volumes:
   db-data:
@@ -49,5 +72,5 @@ volumes:
 networks:
   common-network:
 
-# sudo DB_PASSWORD=test1234 DB_USER=user DB_NAME=imageprocessor KEYCLOAK_ADMIN=admin KEYCLOAK_ADMIN_PASSWORD=admin docker compose up
+# sudo RABBITMQ_PASSWORD=test1234 RABBITMQ_USER=user DB_PASSWORD=test1234 DB_USER=user DB_NAME=imageprocessor KEYCLOAK_ADMIN=admin KEYCLOAK_ADMIN_PASSWORD=admin docker compose up
 # Keycloak ADMIN = admin:admin  USER = user:user

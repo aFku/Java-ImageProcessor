@@ -1,0 +1,70 @@
+{
+   "bindings":[
+
+   ],
+   "exchanges":[
+
+   ],
+   "global_parameters":[
+
+   ],
+   "parameters":[
+
+   ],
+   "permissions":[
+      {
+         "configure":".*",
+         "read":".*",
+         "user":"user",
+         "vhost":"/",
+         "write":".*"
+      }
+   ],
+   "policies":[
+
+   ],
+   "queues":[
+      {
+         "arguments":{
+            "x-queue-type":"classic"
+         },
+         "auto_delete":false,
+         "durable":true,
+         "name":"ImageQueue",
+         "type":"classic",
+         "vhost":"/"
+      }
+   ],
+   "rabbit_version":"3.9.20",
+   "rabbitmq_version":"3.9.20",
+   "topic_permissions":[
+
+   ],
+   "users":[
+      {
+         "hashing_algorithm":"rabbit_password_hashing_sha256",
+         "limits":{
+
+         },
+         "name":"user",
+         "password_hash":"M66GAjHgTc9oROZfivMiLGs4b18X0z/GH3MAR7nrXNbwxmGS",
+         "tags":[
+            "administrator"
+         ]
+      }
+   ],
+   "vhosts":[
+      {
+         "limits":[
+
+         ],
+         "metadata":{
+            "description":"Default virtual host",
+            "tags":[
+
+            ]
+         },
+         "name":"/"
+      }
+   ]
+}
