@@ -20,15 +20,6 @@ public class RabbitMqMessageMapper {
         return request;
     }
 
-    public static RabbitMqRequest createRequestObject(String rawFilename, ImageColorConversion colorConversion, int cropHeight, int cropWidth, boolean watermark){
-        ImageProcessAttributes attributes = new ImageProcessAttributes();
-        attributes.setColorConversion(colorConversion);
-        attributes.setWatermark(watermark);
-        attributes.setCropHeight(cropHeight);
-        attributes.setCropWidth(cropWidth);
-        return createRequestObject(rawFilename, attributes);
-    }
-
     public static String requestObjectToJsonString(RabbitMqRequest request) throws JsonProcessingException {
         return mapper.writeValueAsString(request);
     }

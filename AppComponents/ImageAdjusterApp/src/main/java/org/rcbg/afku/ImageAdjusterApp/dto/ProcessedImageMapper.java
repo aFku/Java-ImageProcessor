@@ -11,11 +11,13 @@ public interface ProcessedImageMapper {
 
     ProcessedImageMapper INSTANCE = Mappers.getMapper(ProcessedImageMapper.class);
 
+    @Mapping(source = "processedImage.rawImage.imageId", target = "rawImageId")
     public ProcessedImageDto toDto(ProcessedImage processedImage);
 
     @Mapping(source = "attributes.colorConversion", target = "colorConversion")
     @Mapping(source = "attributes.cropHeight", target = "cropHeight")
     @Mapping(source = "attributes.cropWidth", target = "cropWidth")
     @Mapping(source = "attributes.watermark", target = "watermark")
+    @Mapping(source = "rawImage", target = "rawImage")
     public ProcessedImage toEntity(String filename, RawImage rawImage, ImageProcessAttributes attributes);
 }

@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.rcbg.afku.ImageAdjusterApp.domain.RawImage;
 import org.rcbg.afku.ImageAdjusterApp.dto.ImageProcessAttributes;
+import org.rcbg.afku.ImageAdjusterApp.dto.rabbitmq.RabbitMqMessageMapper;
+import org.rcbg.afku.ImageAdjusterApp.dto.rabbitmq.RabbitMqRequest;
 import org.rcbg.afku.ImageAdjusterApp.services.DatabaseService;
 import org.rcbg.afku.ImageAdjusterApp.services.RabbitMqService;
 import org.rcbg.afku.ImageAdjusterApp.services.StorageService;
@@ -29,13 +31,14 @@ public class MainController {
     public String addImageToProcess(HttpServletRequest request, @Valid ImageProcessAttributes attributes, @RequestParam(value = "file")MultipartFile image, Authentication auth){
         String fileName = storageService.saveFile(image);
         RawImage rawImage = databaseService.saveRawImageRecord(fileName, auth.getName());
-
-        String template = "{ \"colorConversion\": \"%s\", \"cropHeight\": %d, \"cropWidth\": %d, \"watermark\": %b, \"fileName\": \"%s\", \"UploadedBy\": \"%s\" }";
+        RabbitMqRequest rabbitMqRequest = RabbitMqMessageMapper.createRequestObject(rawImage.getFilename(), attributes);
+        String message = "{}";
         try {
-            rabbitMqService.SendMessage(template);
+            message = RabbitMqMessageMapper.requestObjectToJsonString(rabbitMqRequest);
+            rabbitMqService.SendMessage(message);
         } catch (Exception ex){
             ex.printStackTrace();
         }
-        return String.format(template, attributes.getColorConversion(), attributes.getCropHeight(), attributes.getCropWidth(), attributes.isWatermark(), fileName, auth.getName());
+        return message;
     }
 }
