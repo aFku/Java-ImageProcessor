@@ -1,4 +1,4 @@
-package org.rcbg.afku.ImageAdjusterApp.dto;
+package org.rcbg.afku.ImageAdjusterApp.dto.rabbitmq;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RabbitMqRequest extends ImageProcessAttributes{
-    private String rawFilename;
+public class ProcessStatus {
+    private Status status;
+    private String message;
 }
