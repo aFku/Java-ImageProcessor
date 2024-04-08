@@ -1,5 +1,6 @@
 package org.rcbg.afku.ImageAdjusterApp.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProcessedImageDto extends ImageProcessAttributes {
-    private Integer imageId;
-    private Integer rawImageId;
+public class ImageProcessAttributes {
+    private ImageColorConversion colorConversion;
+    private int cropHeight;
+    private int cropWidth;
+    private boolean watermark;
 }

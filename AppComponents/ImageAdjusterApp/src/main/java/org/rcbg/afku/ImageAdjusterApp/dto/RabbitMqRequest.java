@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProcessedImageDto extends ImageProcessAttributes {
-    private Integer imageId;
-    private Integer rawImageId;
+public class RabbitMqRequest extends ImageProcessAttributes{
+    private String rawFilename;
 }
