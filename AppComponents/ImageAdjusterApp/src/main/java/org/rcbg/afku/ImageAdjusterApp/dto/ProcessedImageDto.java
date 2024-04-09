@@ -10,10 +10,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProcessedImageDto extends ImageProcessAttributes {
+public class ProcessedImageDto extends ImageProcessAttributes implements IFile {
     private Integer imageId;
-    private String rawImageFilename;
+    private String filename;
 
     @JsonIgnore
     private String ownerUuid;
+
+    public ProcessedImageDto(ProcessedImageDto dto){
+        super(dto);
+        this.imageId = dto.getImageId();
+        this.filename = dto.getFilename();
+        this.ownerUuid = dto.getFilename();
+    }
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProcessedImageResponse {
+public class ProcessedImageQueueResponse {
     private String processedImageName;
     private String processStatus;
     private String message;

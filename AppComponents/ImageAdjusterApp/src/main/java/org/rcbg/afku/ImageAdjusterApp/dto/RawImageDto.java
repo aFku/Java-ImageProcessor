@@ -10,11 +10,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RawImageDto{
+public class RawImageDto implements IFile {
 
     private Integer imageId;
     private String filename;
 
     @JsonIgnore
     private String ownerUuid;
+
+    public RawImageDto(RawImageDto dto){
+        this.imageId = dto.getImageId();
+        this.filename = dto.getFilename();
+        this.ownerUuid = dto.getOwnerUuid();
+    }
 }

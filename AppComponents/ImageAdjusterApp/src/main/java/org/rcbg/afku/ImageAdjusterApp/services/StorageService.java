@@ -24,9 +24,10 @@ public class StorageService {
             log.error(String.format("File: %s already exists", file.getAbsoluteFile()));
             throw new FileAlreadyExistException(String.format("Cannot save file because: %s already exists in storage", file.getAbsoluteFile()));
         }
-        try (OutputStream os = new FileOutputStream(file);){
+        try (OutputStream os = new FileOutputStream(file)){
             file.createNewFile();
             os.write(multipartFile.getBytes());
+            log.info("File saved to the storage: " + file.getAbsoluteFile());
         } catch (IOException ex){
             log.error("Cannot save file: " + file.getAbsoluteFile() + " | " + ex.getMessage());
             throw new FailedSaveException("Error during saving file: " + file.getAbsoluteFile());
