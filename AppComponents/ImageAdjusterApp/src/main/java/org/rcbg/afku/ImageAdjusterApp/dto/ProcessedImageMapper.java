@@ -11,7 +11,8 @@ public interface ProcessedImageMapper {
 
     ProcessedImageMapper INSTANCE = Mappers.getMapper(ProcessedImageMapper.class);
 
-    @Mapping(source = "processedImage.rawImage.imageId", target = "rawImageId")
+    @Mapping(source = "processedImage.rawImage.filename", target = "rawImageFilename")
+    @Mapping(source = "processedImage.rawImage.ownerUuid", target = "ownerUuid")
     public ProcessedImageDto toDto(ProcessedImage processedImage);
 
     @Mapping(source = "attributes.colorConversion", target = "colorConversion")
