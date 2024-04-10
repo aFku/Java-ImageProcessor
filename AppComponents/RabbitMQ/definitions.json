@@ -33,6 +33,15 @@
          "name":"ImageQueue",
          "type":"classic",
          "vhost":"/"
+      },
+      {
+         "name":"ProcessingResponseQueue",
+         "vhost":"/",
+         "durable":true,
+         "auto_delete":false,
+         "arguments":{
+            "x-queue-type":"classic"
+         }
       }
    ],
    "rabbit_version":"3.9.20",
