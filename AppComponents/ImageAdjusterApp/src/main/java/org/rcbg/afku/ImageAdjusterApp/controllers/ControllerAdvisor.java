@@ -30,7 +30,7 @@ public class ControllerAdvisor {
     }
 
     @ExceptionHandler({FileAlreadyExistException.class, FailedSaveException.class})
-    public ResponseEntity<ErrorResponse> handleFileAlreadyExistException(RuntimeException ex, HttpServletRequest request){
+    public ResponseEntity<ErrorResponse> handleFileExceptions(RuntimeException ex, HttpServletRequest request){
         log.error("StorageException: " + ex.getMessage());
         String responseMessage = "Internal server error during saving file";
         return ResponseFactory.createErrorResponse(request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR, new ArrayList<>(Collections.singleton(responseMessage)));
@@ -50,4 +50,9 @@ public class ControllerAdvisor {
         return ResponseFactory.createErrorResponse(request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR, new ArrayList<>(Collections.singleton(responseMessage)));
     }
 
+    @ExceptionHandler(StreamProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleStreamProcessingException(RuntimeException ex, HttpServletRequest request){
+        log.error(ex.getMessage());
+        return ResponseFactory.createErrorResponse(request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR, new ArrayList<>(Collections.singleton(ex.getMessage())));
+    }
 }

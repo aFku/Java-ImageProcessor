@@ -3,6 +3,7 @@ package org.rcbg.afku.ImageAdjusterApp.services;
 import lombok.extern.slf4j.Slf4j;
 import org.rcbg.afku.ImageAdjusterApp.exceptions.FailedSaveException;
 import org.rcbg.afku.ImageAdjusterApp.exceptions.FileAlreadyExistException;
+import org.rcbg.afku.ImageAdjusterApp.exceptions.ImageNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,9 @@ public class StorageService {
 
     @Value("${storage.rawImages.destination}")
     private String rawImagesDestination;
+
+    @Value("${storage.processedImages.destination}")
+    private String processedImagesDestination;
 
     public String saveFile(MultipartFile multipartFile){
         String filename = generateFileName();
@@ -39,5 +43,25 @@ public class StorageService {
         String extension = "jpeg";
         UUID uuidName = UUID.randomUUID();
         return uuidName.toString() + "." + extension;
+    }
+
+    private InputStream loadInputStream(String path, String filename){
+        InputStream in;
+        File file = new File(path, filename);
+        try{
+            in = new FileInputStream(file.getAbsoluteFile());
+        }catch (FileNotFoundException ex){
+            log.error("FileNotFoundException: " + ex.getMessage());
+            throw new ImageNotFoundException("Cannot find file under path: " + file.getAbsoluteFile());
+        }
+        return in;
+    }
+
+    public InputStream getRawImageStream(String filename){
+        return loadInputStream(rawImagesDestination, filename);
+    }
+
+    public InputStream getProcessedImageStream(String filename){
+        return loadInputStream(processedImagesDestination, filename);
     }
 }
