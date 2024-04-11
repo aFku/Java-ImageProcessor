@@ -27,12 +27,4 @@ public class RabbitMqRequester implements IRequester{
         log.debug("Sending data to queue: " + this.requestQueueName + " message: " + message);
         channel.basicPublish("", this.requestQueueName, null, message.getBytes());
     }
-
-    @Override
-    protected void finalize() throws Throwable { // Using finalize because there is no better way to close connections
-        log.debug("Closing connection to RabbitMQ");
-        super.finalize();
-        this.channel.close();
-        this.channel.getConnection().close();
-    }
 }

@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
 import { HttpClient } from '@angular/common/http';
 import { UploadService } from './upload.service';
+import * as SockJS from 'sockjs-client';
+import * as Stomp from 'stompjs';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +23,31 @@ export class AppComponent {
         const roles = this.keycloak.getUserRoles();
       }
     });
+
+    console.log(this.keycloak.getToken());
+
+    var stompClient = Stomp.client("ws://localhost:80/websocket" + '?access_token=' + this.keycloak.getToken());
+
+    var error_callback = function(error: any) {
+      // display the error's message header:
+      alert(error.headers.message);
+    };
+
+    var headers = {
+      // 'authorization': 'Bearer '+ await this.keycloak.getToken(),
+    }
+    
+    stompClient.connect(headers, error_callback);
+
+    // var message_callback = function(message: any) {
+    //   console.log(message.body);
+    // }
+
+    // console.log(this.keycloak.loadUserProfile().then((user: any) => {
+    //   console.log(user.id);
+    // }));
+
+    // var subscription = stompClient.subscribe("/queue/test", message_callback, headers);
   }
 
   login() {
