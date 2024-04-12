@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { UploadService } from './upload.service';
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,39 +16,43 @@ export class AppComponent {
   title = 'image-processor-frontend';
 
   authenticated = false;
+  stompClient: Stomp.Client = Stomp.client("ws://localhost:80/websocket");
 
   constructor(private readonly keycloak: KeycloakService, private http: HttpClient, private uploadService: UploadService) {
-    this.keycloak.isLoggedIn().then((authenticated) => {
-      this.authenticated = authenticated;
-      if (authenticated) {
-        const roles = this.keycloak.getUserRoles();
-      }
-    });
+    this.keycloak = keycloak;
+    this.http = http;
+    this.uploadService = uploadService;
+  }
 
-    console.log(this.keycloak.getToken());
+  async ngOnInit() {
+    await this.checkAuthentication();
+    await this.connectWebSocket();
+  }
 
-    var stompClient = Stomp.client("ws://localhost:80/websocket" + '?access_token=' + this.keycloak.getToken());
+  async checkAuthentication() {
+    this.authenticated = await this.keycloak.isLoggedIn();
+  }
 
-    var error_callback = function(error: any) {
-      // display the error's message header:
-      alert(error.headers.message);
+  async connectWebSocket() {
+    const token = await this.keycloak.getToken();
+    this.stompClient = Stomp.client("ws://localhost:80/websocket"); // + '?access_token=' + token);
+
+    const headers = {
+      'Authorization': 'Bearer ' + token,
     };
 
-    var headers = {
-      // 'authorization': 'Bearer '+ await this.keycloak.getToken(),
+    var message_callback = function(message: any) {
+      console.log(message);
     }
+
+    const connect_callback = (message: any) => {
+      this.stompClient.subscribe("/tasks/added_tasks", message_callback, headers);
+    };
     
-    stompClient.connect(headers, error_callback);
+    this.stompClient.connect(headers, connect_callback);
 
-    // var message_callback = function(message: any) {
-    //   console.log(message.body);
-    // }
-
-    // console.log(this.keycloak.loadUserProfile().then((user: any) => {
-    //   console.log(user.id);
-    // }));
-
-    // var subscription = stompClient.subscribe("/queue/test", message_callback, headers);
+    // console.log("subscribing to /tasks/added_tasks")
+    // 
   }
 
   login() {

@@ -1,0 +1,13 @@
+<b:beans xmlns="http://www.springframework.org/schema/security"
+         xmlns:b="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
+
+    <websocket-message-broker id="ws-interceptor" use-authorization-manager="true" same-origin-disabled="true">
+        <intercept-message pattern="/**" access="authenticated" type="SUBSCRIBE"/>
+        <intercept-message pattern="/**" access="authenticated"/>
+    </websocket-message-broker>
+
+
+</b:beans>
