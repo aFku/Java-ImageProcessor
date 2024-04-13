@@ -41,7 +41,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config){
-        config.enableSimpleBroker("/tasks");
+        config.enableSimpleBroker("/queue", "/user");
+        //config.setUserDestinationPrefix("/notification/user/");
     }
 
     @Override
@@ -49,7 +50,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/websocket").setAllowedOrigins("*");
     }
 
-    
+
     // Do not know why, but It does not work without id property set up for message-broker in XML
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {

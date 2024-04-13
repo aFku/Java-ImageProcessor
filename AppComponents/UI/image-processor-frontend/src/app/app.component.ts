@@ -35,7 +35,7 @@ export class AppComponent {
 
   async connectWebSocket() {
     const token = await this.keycloak.getToken();
-    this.stompClient = Stomp.client("ws://localhost:80/websocket"); // + '?access_token=' + token);
+    this.stompClient = Stomp.client("ws://localhost:80/websocket");
 
     const headers = {
       'Authorization': 'Bearer ' + token,
@@ -46,7 +46,9 @@ export class AppComponent {
     }
 
     const connect_callback = (message: any) => {
-      this.stompClient.subscribe("/tasks/added_tasks", message_callback, headers);
+      this.keycloak.loadUserProfile().then(profile => {
+        this.stompClient.subscribe("/user/" + profile.id + "/queue/notification", message_callback, headers);
+      });
     };
     
     this.stompClient.connect(headers, connect_callback);

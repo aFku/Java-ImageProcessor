@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 
-
+@Service
 public class WebsocketService {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    public void sendSpecific(@Payload String msg, Principal user) throws Exception {
-        simpMessagingTemplate.convertAndSendToUser(user.getName(), "/tasks/added_tasks", msg);
+    public void sendSpecific(@Payload String msg, String userId) throws Exception {
+        simpMessagingTemplate.convertAndSendToUser(userId, "/queue/notification", msg);
     }
 }
