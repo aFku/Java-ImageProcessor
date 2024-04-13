@@ -34,7 +34,7 @@ public class DatabaseService {
 
     public ProcessedImageDto saveProcessedImage(String filename, String rawImageFilename, ImageProcessAttributes attributes) throws ImagesLinkException {
         RawImage rawImage = rawImageRepository.getRawImageByFilename(rawImageFilename)
-                .orElseThrow(() -> new ImagesLinkException("Cannot find raw image " + rawImageFilename + "to connect with processed " + filename));
+                .orElseThrow(() -> new ImagesLinkException("Cannot find raw image " + rawImageFilename + " to connect with processed " + filename));
         log.info("Saving processed image to database: {\"filename\": \"" + rawImage.getFilename() + "\", \"attributes\": " + attributes.toString() + "}");
         ProcessedImage processedImage = ProcessedImageMapper.INSTANCE.toEntity(filename, rawImage, attributes);
         return ProcessedImageMapper.INSTANCE.toDto(processedImageRepository.save(processedImage));

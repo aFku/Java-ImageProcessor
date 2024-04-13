@@ -23,25 +23,19 @@ public class Callbacks {
     public void receiveProcessedImage(String responseMessage){
         RabbitMqResponse responseObject;
         ProcessedImageDto processedImageDto;
-        log.error("Debug1"); // Debug
         try {
             responseObject = RabbitMqMessageMapper.JsonStringToResponse(responseMessage);
-            //processedImageDto = databaseService.saveProcessedImage(responseObject.getProcessedFilename(), responseObject.getRawFilename(), responseObject.getAttributes());
-        } catch (JsonProcessingException ex){
-            ex.printStackTrace();
-            return ; }// Send error over websocket
-//        } catch (ImagesLinkException ex) {
-//            ex.printStackTrace();
-//            return; // Send error over websocket
-//        }
-        if(responseObject.getProcessStatus().getStatus() == Status.FAILURE){
-            return; // send error over web socket
-        } else {
-            try {
-                websocketService.sendSpecific("{\"Hello\": \"World\"}", "50c2b847-380d-4b29-a4e7-372bf8d06886");
-            } catch (Exception ex){
-                ex.printStackTrace();
-            }
+            processedImageDto = databaseService.saveProcessedImage(responseObject.getProcessedFilename(), responseObject.getRawFilename(), responseObject.getAttributes());
+        } catch (JsonProcessingException | ImagesLinkException ex){
+            log.error(ex.getClass().getName() + ": " + ex.getMessage());
+            log.error("Error: WS message not send due to unidentified user");
+            return;
+        }
+        try {
+            websocketService.sendSpecific(responseMessage, processedImageDto.getOwnerUuid());
+        } catch (Exception ex){
+            log.error("Error: " + ex.getMessage());
+            log.error("Cannot send WS message to user " + processedImageDto.getOwnerUuid() + " due to error above");
         }
     }
 }
