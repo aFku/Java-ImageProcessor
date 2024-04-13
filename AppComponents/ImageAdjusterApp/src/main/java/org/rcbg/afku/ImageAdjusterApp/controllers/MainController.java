@@ -9,6 +9,7 @@ import org.rcbg.afku.ImageAdjusterApp.dto.rabbitmq.RabbitMqRequest;
 import org.rcbg.afku.ImageAdjusterApp.responses.*;
 import org.rcbg.afku.ImageAdjusterApp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -39,15 +40,13 @@ public class MainController {
         return ResponseFactory.createProcessedImageListResponse(request.getRequestURI(), HttpStatus.OK, dtos);
     }
 
-    @GetMapping
-    @RequestMapping("/{filename}")
+    @GetMapping("/{filename}")
     public ResponseEntity<ProcessedImageResponse> getSingleProcessedImage(HttpServletRequest request, Authentication auth, @PathVariable String filename){
         ProcessedImageDto dto = imageFetchingService.getSingleProcessedImage(auth.getName(), filename);
         return ResponseFactory.createProcessedImageResponse(request.getRequestURI(), HttpStatus.OK, dto);
     }
 
-    @GetMapping
-    @RequestMapping("/raw/{filename}")
+    @GetMapping("/raw/{filename}")
     public ResponseEntity<RawImageResponse> getSingleRawImage(HttpServletRequest request, Authentication auth, @PathVariable String filename) {
         RawImageDto dto = imageFetchingService.getSingleRawImage(auth.getName(), filename);
         return ResponseFactory.createRawImageResponse(request.getRequestURI(), HttpStatus.OK, dto);

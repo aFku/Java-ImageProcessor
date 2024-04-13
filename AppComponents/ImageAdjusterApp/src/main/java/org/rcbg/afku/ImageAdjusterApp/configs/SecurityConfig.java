@@ -36,6 +36,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.OPTIONS).permitAll()); // Required to allow preflight cors requests
         http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/content/**").permitAll());
         http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/websocket").permitAll());
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api-docs").permitAll());
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api-docs/**").permitAll());
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/swagger-ui/**").permitAll());
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api-docs-ui.html").permitAll());
         http.authorizeHttpRequests(authorize ->
             authorize.anyRequest().authenticated())
             .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
