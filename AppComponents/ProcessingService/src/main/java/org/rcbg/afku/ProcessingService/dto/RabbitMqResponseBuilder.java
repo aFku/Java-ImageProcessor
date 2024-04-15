@@ -54,4 +54,9 @@ public class RabbitMqResponseBuilder {
         response.setAttributes(this.attributes);
         return response;
     }
+
+    public Status getStatus(){
+        return status;
+    }
+
 }
