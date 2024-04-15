@@ -10,6 +10,7 @@ An application in form of microservices. It allows you to:
 ## TO DO
 - Processing service
 - Tests
+- Frontend
 
 ## Stack
 - Java 17
