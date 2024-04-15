@@ -1,6 +1,3 @@
 export const environment = {
-    keycloakServiceName: "keycloak",
-    keycloakLoginOptions: {
-        redirectUrl: "http://localhost/login"
-    },
+    keycloakServiceAddress: "localhost:8080",
 };

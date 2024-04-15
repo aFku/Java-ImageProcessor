@@ -6,7 +6,7 @@ export function initKeycloak (keycloak: KeycloakService) {
   return () =>
     keycloak.init({
       config: {
-        url: 'http://' + environment.keycloakServiceName + ':8080',
+        url: 'http://' + environment.keycloakServiceAddress,
         realm: 'ImageProcessor',
         clientId: 'image-processor-frontend',
       },

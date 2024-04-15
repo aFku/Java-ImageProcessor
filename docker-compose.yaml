@@ -7,10 +7,7 @@ services:
     container_name: app-postgres
     volumes:
       - db-data:/var/lib/postgresql
-    networks: # Port 5432
-      - common-network
-    ports:  # For development purpose
-      - "5432:5432"
+    network_mode: host # Port: 5432
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_USER=${DB_USER}
@@ -25,15 +22,11 @@ services:
     image: quay.io/keycloak/keycloak:22.0.5 # 23.0.X and 24.0.X has problem with hibernate connection to database
     container_name: app-keycloak
     restart: always
-    command: "start-dev --db=postgres --db-url=jdbc:postgresql://postgresql_db:5432/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD} --import-realm --health-enabled=true"
+    command: "start-dev --db=postgres --db-url=jdbc:postgresql://localhost:5432/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD} --import-realm --health-enabled=true"
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
-    networks: # port 8443
-      - common-network
-    ports:        # For development purpose
-      - "8443:8443"
-      - "8080:8080"
+    network_mode: host # ports: 8443, 8080
     volumes:
       - ./AppComponents/Keycloak/ImageProcessor-realm.json:/opt/keycloak/data/import/realm.json
     depends_on:
@@ -49,11 +42,7 @@ services:
     image: rabbitmq:3.9.20-management
     container_name: app-rabbitmq
     restart: always
-    networks:
-      - common-network
-    ports: # For development purpose
-      - "15672:15672"
-      - "5672:5672"
+    network_mode: host # ports: 15672, 5672
     environment:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
@@ -80,20 +69,19 @@ services:
       - processed-images:/mnt/proc
       - raw-images:/mnt/raw
     environment:
-      - KEYCLOAK_SERVICE=keycloak
+      - KEYCLOAK_SERVICE=localhost
       - APP_PORT=80
       - RAW_STORAGE=/mnt/raw
       - PROCESSED_STORAGE=/mnt/proc
-      - RABBITMQ_SERVICE=rabbitmq
+      - RABBITMQ_SERVICE=localhost
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_USER=${DB_USER}
       - DB_NAME=${DB_NAME}
-      - DB_SERVICE=postgresql_db
+      - DB_SERVICE=localhost
       - LOG_LEVEL=DEBUG
-    networks:
-      - common-network
+    network_mode: host # port 80
     depends_on:
       postgresql_db:
         condition: service_healthy
@@ -114,9 +102,7 @@ services:
     build:
       context: AppComponents/UI/image-processor-frontend
       dockerfile: Dockerfile
-    networks:
-      - common-network
-#      - host
+    network_mode: host # port 4200
     depends_on:
       adjusterapp:
         condition: service_healthy
@@ -126,41 +112,11 @@ services:
       timeout: 10s
       retries: 5
 
-  nginx:
-    image: nginx:stable
-    container_name: nginx_app
-    restart: always
-    networks:
-      - common-network
-    ports:
-      - "80:80"
-    volumes:
-      - ./AppComponents/Nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./AppComponents/Nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./AppComponents/Nginx/favicon.ico:/etc/nginx/html/favicon.ico
-    healthcheck:
-      test: "curl --fail localhost/health | grep UP || exit 1"
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    depends_on:
-      keycloak:
-        condition: service_healthy
-      angular-front:
-        condition: service_healthy
-
-
 
 volumes:
   db-data:
   processed-images:
   raw-images:
-
-networks:
-  common-network:
-  host:
-    driver: host
-    external: true
 
 # sudo RABBITMQ_PASSWORD=test1234 RABBITMQ_USER=user DB_PASSWORD=test1234 DB_USER=user DB_NAME=imageprocessor KEYCLOAK_ADMIN=admin KEYCLOAK_ADMIN_PASSWORD=admin docker compose up
 # Keycloak ADMIN = admin:admin  USER = user:user
