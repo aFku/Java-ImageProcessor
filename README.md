@@ -1,6 +1,6 @@
 # Java-ImageProcessor
 
-An application in form of microservices. Tt allows you to:
+An application in form of microservices. It allows you to:
 - Send image to processing with HTML form in Angular app hitting backend REST API
 - Chose how you want to customize your image
 - Process your image
