@@ -69,11 +69,98 @@ services:
       keycloak:
         condition: service_healthy
 
+  adjusterapp:
+    image: adjuster_app:latest
+    container_name: adjuster_app
+    restart: always
+    build:
+      context: AppComponents/ImageAdjusterApp
+      dockerfile: Dockerfile
+    volumes:
+      - processed-images:/mnt/proc
+      - raw-images:/mnt/raw
+    environment:
+      - KEYCLOAK_SERVICE=keycloak
+      - APP_PORT=80
+      - RAW_STORAGE=/mnt/raw
+      - PROCESSED_STORAGE=/mnt/proc
+      - RABBITMQ_SERVICE=rabbitmq
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+      - DB_SERVICE=postgresql_db
+      - LOG_LEVEL=DEBUG
+    networks:
+      - common-network
+    depends_on:
+      postgresql_db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail localhost/api-docs | grep /api/v1/images || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  angular-front:
+    image: adjuster_front:latest
+    container_name: adjuster_front
+    restart: always
+    build:
+      context: AppComponents/UI/image-processor-frontend
+      dockerfile: Dockerfile
+    networks:
+      - common-network
+#      - host
+    depends_on:
+      adjusterapp:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail localhost:4200"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  nginx:
+    image: nginx:stable
+    container_name: nginx_app
+    restart: always
+    networks:
+      - common-network
+    ports:
+      - "80:80"
+    volumes:
+      - ./AppComponents/Nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./AppComponents/Nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./AppComponents/Nginx/favicon.ico:/etc/nginx/html/favicon.ico
+    healthcheck:
+      test: "curl --fail localhost/health | grep UP || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      angular-front:
+        condition: service_healthy
+
+
+
 volumes:
   db-data:
+  processed-images:
+  raw-images:
 
 networks:
   common-network:
+  host:
+    driver: host
+    external: true
 
 # sudo RABBITMQ_PASSWORD=test1234 RABBITMQ_USER=user DB_PASSWORD=test1234 DB_USER=user DB_NAME=imageprocessor KEYCLOAK_ADMIN=admin KEYCLOAK_ADMIN_PASSWORD=admin docker compose up
 # Keycloak ADMIN = admin:admin  USER = user:user

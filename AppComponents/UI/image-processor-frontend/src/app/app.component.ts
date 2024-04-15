@@ -41,6 +41,8 @@ export class AppComponent {
       'Authorization': 'Bearer ' + token,
     };
 
+    console.log(headers); // Debug
+
     var message_callback = function(message: any) {
       console.log(message);
     }
@@ -66,7 +68,7 @@ export class AppComponent {
   }
 
   send(){
-    this.http.get('http://localhost:80/api/v1/test').subscribe({
+    this.http.get('http://keycloak:8080/api/v1/test').subscribe({
       next: (response) =>{
         console.log(response);
       },
