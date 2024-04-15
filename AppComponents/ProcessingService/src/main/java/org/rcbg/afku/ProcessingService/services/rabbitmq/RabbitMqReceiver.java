@@ -24,10 +24,10 @@ public class RabbitMqReceiver {
     private Channel channel;
 
     private DeliverCallback getDeliveryCallback() {
-        // Temporary debug
         return (consumerTag, delivery) ->{
             String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
             log.debug("Received message: " + message);
+            callbacks.receiveProcessingRequest(message);
         };
     }
 
