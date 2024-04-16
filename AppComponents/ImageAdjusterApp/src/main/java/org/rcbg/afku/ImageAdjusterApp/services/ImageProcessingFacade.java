@@ -28,8 +28,12 @@ public class ImageProcessingFacade {
     @Autowired
     private StorageService storageService;
 
+    @Autowired
+    private RequestValidator requestValidator;
+
     public RabbitMqRequest receiveRawImage(MultipartFile multipartFile, ImageProcessAttributes attributes, String ownerId) {
         String savedFilename = storageService.saveFile(multipartFile);
+        requestValidator.validate(savedFilename, attributes);
         databaseService.saveRawImageRecord(savedFilename, ownerId);
         RabbitMqRequest rabbitRequest = RabbitMqMessageMapper.createRequestObject(savedFilename, attributes);
         try {

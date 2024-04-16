@@ -1,6 +1,8 @@
 package org.rcbg.afku.ImageAdjusterApp.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.rcbg.afku.ImageAdjusterApp.exceptions.*;
 import org.rcbg.afku.ImageAdjusterApp.responses.ErrorResponse;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @ControllerAdvice
@@ -54,5 +57,24 @@ public class ControllerAdvisor {
     public ResponseEntity<ErrorResponse> handleStreamProcessingException(RuntimeException ex, HttpServletRequest request){
         log.error(ex.getMessage());
         return ResponseFactory.createErrorResponse(request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR, new ArrayList<>(Collections.singleton(ex.getMessage())));
+    }
+
+    @ExceptionHandler(RequestValidationException.class)
+    public ResponseEntity<ErrorResponse> handleRequestValidationException(RuntimeException ex, HttpServletRequest request){
+        log.error(ex.getMessage());
+        return ResponseFactory.createErrorResponse(request.getRequestURI(), HttpStatus.BAD_REQUEST, new ArrayList<>(Collections.singleton(ex.getMessage())));
+    }
+
+    @ExceptionHandler(ValidationFailureException.class)
+    public ResponseEntity<ErrorResponse> handleValidationFailureException(RuntimeException ex, HttpServletRequest request){
+        log.error(ex.getMessage());
+        return ResponseFactory.createErrorResponse(request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR, new ArrayList<>(Collections.singleton(ex.getMessage())));
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<ErrorResponse> constraintViolationHandler(ConstraintViolationException ex, HttpServletRequest request){
+        List<String> messages = ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage).toList();
+        log.error("ConstraintViolationException (User: " + request.getUserPrincipal().getName() + "): " + messages.toString());
+        return ResponseFactory.createErrorResponse(request.getRequestURI(), HttpStatus.BAD_REQUEST, messages);
     }
 }
