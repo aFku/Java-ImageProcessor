@@ -66,8 +66,8 @@ services:
       context: AppComponents/ImageAdjusterApp
       dockerfile: Dockerfile
     volumes:
-      - processed-images:/mnt/proc
-      - raw-images:/mnt/raw
+      - /mnt/h/processedImages:/mnt/proc     # Temporary change to develop ProcessingService
+      - /mnt/h/rawImages:/mnt/raw            # Temporary change to develop ProcessingService
     environment:
       - KEYCLOAK_SERVICE=localhost
       - APP_PORT=80

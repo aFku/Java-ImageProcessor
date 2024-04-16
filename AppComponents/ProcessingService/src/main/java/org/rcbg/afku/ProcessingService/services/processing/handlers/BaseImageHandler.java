@@ -16,9 +16,10 @@ public abstract class BaseImageHandler implements IImageHandler{
     }
 
     @Override
-    public void handle(BufferedImage image, RabbitMqRequest request) throws IOException, IncorrectImageSize {
+    public BufferedImage handle(BufferedImage image, RabbitMqRequest request) throws IOException, IncorrectImageSize {
         if(this.nextHandler != null){
-            this.nextHandler.handle(image, request);
+            return this.nextHandler.handle(image, request);
         }
+        return image;
     }
 }
