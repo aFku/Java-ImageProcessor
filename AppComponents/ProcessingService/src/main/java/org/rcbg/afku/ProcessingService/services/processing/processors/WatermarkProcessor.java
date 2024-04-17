@@ -37,8 +37,8 @@ public class WatermarkProcessor {
     }
 
     private BufferedImage loadAndRescaleWatermark(int size) throws IOException {
-        File watermarkFile = ResourceUtils.getFile("classpath:watermark/watermark.png");
-        BufferedImage originalWatermark = ImageIO.read(watermarkFile);
+        InputStream in = getClass().getResourceAsStream("/watermark.png");
+        BufferedImage originalWatermark = ImageIO.read(in);
 
         BufferedImage resizedWatermark = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = resizedWatermark.createGraphics();

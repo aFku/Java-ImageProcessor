@@ -112,11 +112,30 @@ services:
       timeout: 10s
       retries: 5
 
+  processing-service:
+    image: processing_service:latest
+    container_name: processing_service
+    restart: always
+    build:
+      context: AppComponents/ProcessingService
+      dockerfile: Dockerfile
+    volumes:
+      - processed-images:/mnt/proc
+      - raw-images:/mnt/raw
+    environment:
+      - APP_PORT=81
+      - RAW_STORAGE=/mnt/raw
+      - PROCESSED_STORAGE=/mnt/proc
+      - RABBITMQ_SERVICE=localhost
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - LOG_LEVEL=DEBUG
+    network_mode: host # port 81
+    depends_on:
+      adjusterapp:
+        condition: service_healthy
 
 volumes:
   db-data:
   processed-images:
   raw-images:
-
-# sudo RABBITMQ_PASSWORD=test1234 RABBITMQ_USER=user DB_PASSWORD=test1234 DB_USER=user DB_NAME=imageprocessor KEYCLOAK_ADMIN=admin KEYCLOAK_ADMIN_PASSWORD=admin docker compose up
-# Keycloak ADMIN = admin:admin  USER = user:user

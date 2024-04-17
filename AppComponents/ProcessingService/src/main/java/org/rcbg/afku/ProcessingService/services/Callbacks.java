@@ -65,7 +65,7 @@ public class Callbacks {
             responseObject = errorBuildAndLog(ex);
         }
 
-        if(responseBuilder.getStatus() != Status.FAILURE){
+        if(responseObject == null){
             responseObject = prepareSuccessResponse(processedFilename, requestObject);
         }
 
