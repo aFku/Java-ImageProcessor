@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +30,7 @@ public class MainController {
     private ImageFetchingService imageFetchingService;
 
     @PostMapping
-    public ResponseEntity<RabbitMqRequestResponse> addImageToProcess(HttpServletRequest request, @Valid ImageProcessAttributes attributes, @RequestParam(value = "file")MultipartFile image, Authentication auth){
+    public ResponseEntity<RabbitMqRequestResponse> addImageToProcess(HttpServletRequest request, ImageProcessAttributes attributes, @RequestParam(value = "file")MultipartFile image, Authentication auth){
         RabbitMqRequest dto = imageProcessingFacade.receiveRawImage(image, attributes, auth.getName());
         return ResponseFactory.createRabbitMqRequestResponse(request.getRequestURI(), HttpStatus.OK, dto);
     }

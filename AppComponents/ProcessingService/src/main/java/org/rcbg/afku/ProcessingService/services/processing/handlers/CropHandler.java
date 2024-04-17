@@ -21,11 +21,14 @@ public class CropHandler extends BaseImageHandler {
     public BufferedImage handle(BufferedImage image, RabbitMqRequest request) throws IOException, IncorrectImageSize {
         int w = request.getAttributes().getCropWidth();
         int h = request.getAttributes().getCropHeight();
-        BufferedImage croppedImage = new BufferedImage(w, h, image.getType());
+        BufferedImage croppedImage;
         if(w > 0 && h > 0) {
             log.debug("Cropping image: " + request.getRawFilename() + " to - X: 0, Y: 0, W: " + request.getAttributes().getCropWidth() + ", H: " + request.getAttributes().getCropHeight());
+            croppedImage = new BufferedImage(w, h, image.getType());
             croppedImage.createGraphics().drawImage(processor.cropImage(image, w, h), 0, 0, null);
             log.debug("Image: " + request.getRawFilename() + " has been successful cropped!");
+        } else {
+            croppedImage = image;
         }
         return super.handle(croppedImage, request);
     }

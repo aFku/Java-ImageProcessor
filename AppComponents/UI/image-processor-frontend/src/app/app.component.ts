@@ -15,8 +15,13 @@ import { Observable } from 'rxjs';
 export class AppComponent {
   title = 'image-processor-frontend';
 
+  url = "http://localhost:80/api/v1/images";
+
   authenticated = false;
   stompClient: Stomp.Client = Stomp.client("ws://localhost:80/websocket");
+
+  notificationList = "";
+  imageList = "";
 
   constructor(private readonly keycloak: KeycloakService, private http: HttpClient, private uploadService: UploadService) {
     this.keycloak = keycloak;
@@ -26,14 +31,17 @@ export class AppComponent {
 
   async ngOnInit() {
     await this.checkAuthentication();
-    await this.connectWebSocket();
+    if (this.authenticated) {
+      await this.connectWebSocket(this);
+    }
+    this.getOwnedImages();
   }
 
   async checkAuthentication() {
     this.authenticated = await this.keycloak.isLoggedIn();
   }
 
-  async connectWebSocket() {
+  async connectWebSocket(app: AppComponent) {
     const token = await this.keycloak.getToken();
     this.stompClient = Stomp.client("ws://localhost:80/websocket");
 
@@ -41,10 +49,10 @@ export class AppComponent {
       'Authorization': 'Bearer ' + token,
     };
 
-    console.log(headers); // Debug
-
     var message_callback = function(message: any) {
-      console.log(message);
+      // Add to notification list
+      console.log(message.body)
+      app.notificationList += "<li>" + JSON.stringify(message.body) + "</li>";
     }
 
     const connect_callback = (message: any) => {
@@ -54,9 +62,6 @@ export class AppComponent {
     };
     
     this.stompClient.connect(headers, connect_callback);
-
-    // console.log("subscribing to /tasks/added_tasks")
-    // 
   }
 
   login() {
@@ -67,10 +72,26 @@ export class AppComponent {
     this.keycloak.logout();
   }
 
-  send(){
-    this.http.get('http://keycloak:8080/api/v1/test').subscribe({
+  onSubmit(fileInput: any, cropHeight: any, cropWidth: any, colorConversion: any, watermark: boolean) {
+    const file = fileInput;
+    this.uploadService.uploadFileWithParams(file, cropHeight, cropWidth, colorConversion, watermark).subscribe({
       next: (response) =>{
-        console.log(response);
+        alert(JSON.stringify(response))
+      },
+      error: (err) => {
+        alert(JSON.stringify(err.error));
+      }
+     });
+  }
+
+  getOwnedImages(){
+    this.http.get(this.url).subscribe({
+      next: async (response) =>{
+        let resSTR = JSON.stringify(response);
+        let resJSON = JSON.parse(resSTR);
+        this.generateHtmlListOfImages(resJSON.data).then(images => {
+          this.imageList = images;
+        })
       },
       error: (err) => {
         console.log(err);
@@ -78,15 +99,22 @@ export class AppComponent {
      });
   }
 
-  onSubmit(fileInput: any, cropHeight: any, cropWidth: any, colorConversion: any, watermark: boolean) {
-    const file = fileInput;
-    this.uploadService.uploadFileWithParams(file, cropHeight, cropWidth, colorConversion, watermark).subscribe({
-      next: (response) =>{
-        console.log(response);
-      },
-      error: (err) => {
-        console.log(err);
-      }
-     });
+  async generateHtmlListOfImages(objects: Array<any>){
+    var html = "";
+    objects.forEach((object) => {
+      html += `<div>
+                <div style="width: 1000px; height: 600px;">
+                  <image src="http://localhost:80/content/processed/${object.filename}" width="50%" height="50%"/>
+                </div>
+                <ul>
+                  <li>Filename: ${object.filename}</li>
+                  <li>Color Conversion: ${object.colorConversion}</li>
+                  <li>Crop height: ${object.cropHeight}</li>
+                  <li>Crop width: ${object.cropWidth}</li>
+                  <li>Watermark: ${object.watermark}</li>
+                </ul>
+              </div>`;
+    });
+    return html;
   }
 }

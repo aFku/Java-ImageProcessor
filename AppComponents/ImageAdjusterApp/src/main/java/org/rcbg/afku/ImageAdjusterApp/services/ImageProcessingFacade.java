@@ -1,6 +1,7 @@
 package org.rcbg.afku.ImageAdjusterApp.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.rcbg.afku.ImageAdjusterApp.dto.*;
 import org.rcbg.afku.ImageAdjusterApp.dto.rabbitmq.*;
@@ -11,12 +12,14 @@ import org.rcbg.afku.ImageAdjusterApp.services.rabbitmq.RabbitMqRequester;
 import org.rcbg.afku.ImageAdjusterApp.services.rabbitmq.RabbitMqService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @Slf4j
 @Service
+@Validated
 public class ImageProcessingFacade {
 
     @Autowired
@@ -31,7 +34,8 @@ public class ImageProcessingFacade {
     @Autowired
     private RequestValidator requestValidator;
 
-    public RabbitMqRequest receiveRawImage(MultipartFile multipartFile, ImageProcessAttributes attributes, String ownerId) {
+    @Validated
+    public RabbitMqRequest receiveRawImage(MultipartFile multipartFile, @Valid ImageProcessAttributes attributes, String ownerId) {
         String savedFilename = storageService.saveFile(multipartFile);
         requestValidator.validate(savedFilename, attributes);
         databaseService.saveRawImageRecord(savedFilename, ownerId);
