@@ -8,7 +8,9 @@ An application in form of microservices. It allows you to:
 - Use Keycloak users as application users
 
 ## TO DO
-- Processing service [ In Progress ]
+
+### Application is fully functional and ready to deploy, but there are still some things to do:
+
 - Tests
 - Frontend
 
