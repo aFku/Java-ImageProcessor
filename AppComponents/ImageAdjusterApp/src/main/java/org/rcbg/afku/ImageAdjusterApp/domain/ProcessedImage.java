@@ -18,7 +18,7 @@ public class ProcessedImage {
     private Integer imageId;
     @OneToOne
     private RawImage rawImage;
-    private String filename;
+    private String processedFilename;
     private ImageColorConversion colorConversion;
     private int cropHeight;
     private int cropWidth;

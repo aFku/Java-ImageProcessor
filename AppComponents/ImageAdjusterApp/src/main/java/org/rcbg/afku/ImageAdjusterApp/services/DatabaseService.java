@@ -26,22 +26,22 @@ public class DatabaseService {
 
     public RawImageDto saveRawImageRecord(String filename, String ownerUuid){
         RawImage image = new RawImage();
-        image.setFilename(filename);
+        image.setRawFilename(filename);
         image.setOwnerUuid(ownerUuid);
         log.info("Saving raw image to database: {\"filename\": \"" + filename + "\"}");
         return RawImageMapper.INSTANCE.toDto(rawImageRepository.save(image));
     }
 
-    public ProcessedImageDto saveProcessedImage(String filename, String rawImageFilename, ImageProcessAttributes attributes) throws ImagesLinkException {
-        RawImage rawImage = rawImageRepository.getRawImageByFilename(rawImageFilename)
-                .orElseThrow(() -> new ImagesLinkException("Cannot find raw image " + rawImageFilename + " to connect with processed " + filename));
-        log.info("Saving processed image to database: {\"filename\": \"" + rawImage.getFilename() + "\", \"attributes\": " + attributes.toString() + "}");
-        ProcessedImage processedImage = ProcessedImageMapper.INSTANCE.toEntity(filename, rawImage, attributes);
+    public ProcessedImageDto saveProcessedImage(String processedFilename, String rawFilename, ImageProcessAttributes attributes) throws ImagesLinkException {
+        RawImage rawImage = rawImageRepository.getRawImageByRawFilename(rawFilename)
+                .orElseThrow(() -> new ImagesLinkException("Cannot find raw image " + rawFilename + " to connect with processed " + processedFilename));
+        log.info("Saving processed image to database: {\"processedFilename\": \"" + processedFilename + "\", \"attributes\": " + attributes.toString() + "}");
+        ProcessedImage processedImage = ProcessedImageMapper.INSTANCE.toEntity(processedFilename, rawImage, attributes);
         return ProcessedImageMapper.INSTANCE.toDto(processedImageRepository.save(processedImage));
     }
 
     public RawImageDto getRawImageByFilename(String filename){
-        RawImage image = rawImageRepository.getRawImageByFilename(filename).orElseThrow(() -> new ImageNotFoundException("Cannot find raw image " + filename));
+        RawImage image = rawImageRepository.getRawImageByRawFilename(filename).orElseThrow(() -> new ImageNotFoundException("Cannot find raw image " + filename));
         return RawImageMapper.INSTANCE.toDto(rawImageRepository.save(image));
     }
 
@@ -50,7 +50,7 @@ public class DatabaseService {
     }
 
     public ProcessedImageDto getProcessedImage(String filename){
-        ProcessedImage image = processedImageRepository.getProcessedImageByFilename(filename).orElseThrow(() -> new ImageNotFoundException("Cannot find processed image " + filename));
+        ProcessedImage image = processedImageRepository.getProcessedImageByProcessedFilename(filename).orElseThrow(() -> new ImageNotFoundException("Cannot find processed image " + filename));
         return ProcessedImageMapper.INSTANCE.toDto(image);
     }
 }

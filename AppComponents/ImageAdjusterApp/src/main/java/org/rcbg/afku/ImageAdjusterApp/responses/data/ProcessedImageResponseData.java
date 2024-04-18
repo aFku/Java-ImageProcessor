@@ -8,10 +8,12 @@ import org.rcbg.afku.ImageAdjusterApp.dto.RawImageDto;
 @Getter
 @Setter
 public class ProcessedImageResponseData extends ProcessedImageDto {
-    private final String contentUri;
+    private final String processedContentUri;
+    private final String rawContentUri;
 
-    public ProcessedImageResponseData(ProcessedImageDto dto, String uri){
+    public ProcessedImageResponseData(ProcessedImageDto dto, String processedUri, String rawUri){
         super(dto);
-        this.contentUri = uri;
+        this.processedContentUri = processedUri;
+        this.rawContentUri = rawUri;
     }
 }

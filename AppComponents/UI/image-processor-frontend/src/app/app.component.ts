@@ -104,10 +104,14 @@ export class AppComponent {
     objects.forEach((object) => {
       html += `<div>
                 <div style="width: 1000px; height: 600px;">
-                  <image src="http://localhost:80/content/processed/${object.filename}" width="50%" height="50%"/>
+                  <image src="http://localhost:80${object.processedContentUri}" width="50%" height="50%"/>
+                </div>
+                <div style="width: 1000px; height: 600px;">
+                  <image src="http://localhost:80${object.rawContentUri}" width="50%" height="50%"/>
                 </div>
                 <ul>
-                  <li>Filename: ${object.filename}</li>
+                  <li>Raw Filename: ${object.rawFilename}</li>
+                  <li>Processed Filename: ${object.processedFilename}</li>
                   <li>Color Conversion: ${object.colorConversion}</li>
                   <li>Crop height: ${object.cropHeight}</li>
                   <li>Crop width: ${object.cropWidth}</li>

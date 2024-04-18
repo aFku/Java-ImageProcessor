@@ -7,10 +7,10 @@ import org.rcbg.afku.ImageAdjusterApp.dto.RawImageDto;
 @Getter
 @Setter
 public class RawImageResponseData extends RawImageDto {
-    private final String contentUri;
+    private final String rawContentUri;
 
-    public RawImageResponseData(RawImageDto dto, String uri){
+    public RawImageResponseData(RawImageDto dto, String rawUri){
         super(dto);
-        this.contentUri = uri;
+        this.rawContentUri = rawUri;
     }
 }

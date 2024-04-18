@@ -11,8 +11,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProcessedImageDto extends ImageProcessAttributes implements IFile {
+
+    @JsonIgnore
     private Integer imageId;
-    private String filename;
+    private String processedFilename;
+    private String rawFilename;
 
     @JsonIgnore
     private String ownerUuid;
@@ -20,7 +23,14 @@ public class ProcessedImageDto extends ImageProcessAttributes implements IFile {
     public ProcessedImageDto(ProcessedImageDto dto){
         super(dto);
         this.imageId = dto.getImageId();
-        this.filename = dto.getFilename();
-        this.ownerUuid = dto.getFilename();
+        this.processedFilename = dto.getProcessedFilename();
+        this.ownerUuid = dto.getOwnerUuid();
+        this.rawFilename = dto.getRawFilename();
+    }
+
+    @JsonIgnore
+    @Override
+    public String getFilename() {
+        return this.processedFilename;
     }
 }

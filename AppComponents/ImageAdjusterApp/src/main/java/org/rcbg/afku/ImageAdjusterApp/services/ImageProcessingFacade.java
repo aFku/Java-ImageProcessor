@@ -36,10 +36,10 @@ public class ImageProcessingFacade {
 
     @Validated
     public RabbitMqRequest receiveRawImage(MultipartFile multipartFile, @Valid ImageProcessAttributes attributes, String ownerId) {
-        String savedFilename = storageService.saveFile(multipartFile);
-        requestValidator.validate(savedFilename, attributes);
-        databaseService.saveRawImageRecord(savedFilename, ownerId);
-        RabbitMqRequest rabbitRequest = RabbitMqMessageMapper.createRequestObject(savedFilename, attributes);
+        String savedRawFilename = storageService.saveRawFile(multipartFile);
+        requestValidator.validate(savedRawFilename, attributes);
+        databaseService.saveRawImageRecord(savedRawFilename, ownerId);
+        RabbitMqRequest rabbitRequest = RabbitMqMessageMapper.createRequestObject(savedRawFilename, attributes);
         try {
             String requestMessage = RabbitMqMessageMapper.requestObjectToJsonString(rabbitRequest);
             rabbitMqRequester.sendMessage(requestMessage);

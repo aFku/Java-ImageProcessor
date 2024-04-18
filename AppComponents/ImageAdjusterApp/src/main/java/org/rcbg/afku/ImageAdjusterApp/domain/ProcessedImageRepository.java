@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ProcessedImageRepository extends JpaRepository<ProcessedImage, Integer> {
     public List<ProcessedImage> getProcessedImagesByRawImage_OwnerUuid(String ownerUuid);
-    public Optional<ProcessedImage> getProcessedImageByFilename(String filename);
+    public Optional<ProcessedImage> getProcessedImageByProcessedFilename(String processedFilename);
 }

@@ -33,7 +33,7 @@ public class ResponseFactory {
     public static ResponseEntity<RawImageResponse> createRawImageResponse(String uri, HttpStatus status, RawImageDto dto){
         RawImageResponse response = new RawImageResponse();
         response.setMetaData(generateMetadata(uri, status.value(), "object"));
-        RawImageResponseData data = new RawImageResponseData(dto, "/content/" + dto.getFilename());
+        RawImageResponseData data = new RawImageResponseData(dto, "/content/raw/" + dto.getRawFilename());
         response.setData(data);
         return new ResponseEntity<>(response, new HttpHeaders(), status);
     }
@@ -41,7 +41,7 @@ public class ResponseFactory {
     public static ResponseEntity<ProcessedImageResponse> createProcessedImageResponse(String uri, HttpStatus status, ProcessedImageDto dto){
         ProcessedImageResponse response = new ProcessedImageResponse();
         response.setMetaData(generateMetadata(uri, status.value(), "object"));
-        ProcessedImageResponseData data = new ProcessedImageResponseData(dto, "/content/" + dto.getFilename());
+        ProcessedImageResponseData data = new ProcessedImageResponseData(dto, "/content/processed/" + dto.getProcessedFilename(), "/content/raw/" + dto.getRawFilename());
         response.setData(data);
         return new ResponseEntity<>(response, new HttpHeaders(), status);
     }
@@ -51,15 +51,15 @@ public class ResponseFactory {
         response.setMetaData(generateMetadata(uri, status.value(), "list"));
         List<ProcessedImageResponseData> dataList = new ArrayList<>();
         for(ProcessedImageDto dto : dtos){
-            ProcessedImageResponseData data = new ProcessedImageResponseData(dto, "/content/" + dto.getFilename());
+            ProcessedImageResponseData data = new ProcessedImageResponseData(dto, "/content/processed/" + dto.getProcessedFilename(), "/content/raw/" + dto.getRawFilename());
             dataList.add(data);
         }
         response.setData(dataList);
         return new ResponseEntity<>(response, new HttpHeaders(), status);
     }
 
-    public static ResponseEntity<RabbitMqRequestResponse> createRabbitMqRequestResponse(String uri, HttpStatus status, RabbitMqRequest request){
-        RabbitMqRequestResponse response = new RabbitMqRequestResponse();
+    public static ResponseEntity<ProcessingApprovedResponse> createProcessingApprovedResponse(String uri, HttpStatus status, RabbitMqRequest request){
+        ProcessingApprovedResponse response = new ProcessingApprovedResponse();
         response.setMetaData(generateMetadata(uri, status.value(), "object"));
         response.setData(request);
         return new ResponseEntity<>(response, new HttpHeaders(), status);

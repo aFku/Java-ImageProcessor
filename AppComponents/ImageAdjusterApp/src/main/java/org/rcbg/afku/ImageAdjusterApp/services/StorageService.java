@@ -21,7 +21,7 @@ public class StorageService {
     @Value("${storage.processedImages.destination}")
     private String processedImagesDestination;
 
-    public String saveFile(MultipartFile multipartFile){
+    public String saveRawFile(MultipartFile multipartFile){
         String filename = generateFileName();
         File file = new File(rawImagesDestination, filename);
         if(file.exists()) {

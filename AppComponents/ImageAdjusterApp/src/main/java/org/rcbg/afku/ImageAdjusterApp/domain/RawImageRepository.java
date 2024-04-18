@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface RawImageRepository extends JpaRepository<RawImage, Integer>{
-    Optional<RawImage> getRawImageByFilename(String filename);
+    Optional<RawImage> getRawImageByRawFilename(String rawFilename);
 }

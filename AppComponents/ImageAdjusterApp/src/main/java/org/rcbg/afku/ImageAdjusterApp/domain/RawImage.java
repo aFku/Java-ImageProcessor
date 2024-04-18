@@ -16,6 +16,6 @@ public class RawImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer imageId;
     private String ownerUuid;
-    private String filename;
+    private String rawFilename;
 
 }
